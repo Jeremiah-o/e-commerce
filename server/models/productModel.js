@@ -67,6 +67,7 @@ const productSchema = new mongoose.Schema(
         "Books",
         "Toys",
         "Groceries",
+        "Phones",
       ],
     },
 
