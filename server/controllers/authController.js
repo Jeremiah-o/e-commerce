@@ -21,7 +21,6 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
