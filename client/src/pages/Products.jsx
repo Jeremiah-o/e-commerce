@@ -147,7 +147,7 @@ const Products = () => {
             ))}
           </section>
         ) : (
-          <div className="mt-8 flex h-60 items-center justify-center rounded-[16px] bg-white">
+          <div className="mt-8 flex h-60 items-center justify-center rounded-2xl bg-white">
             <p className="text-lg text-slate-600">No products found.</p>
           </div>
         )}

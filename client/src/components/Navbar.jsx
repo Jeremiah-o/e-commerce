@@ -10,7 +10,7 @@ function Navbar() {
   const navigate = useNavigate();
 
   const { cart } = useCart();
-  console.log(cart);
+  // console.log(cart);
 
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
