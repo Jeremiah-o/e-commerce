@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
 
       const data = await getCart();
-      console.log(data)
+      // console.log(data)
 
       setCart(data.cart?.items || []);
     } catch (err) {
@@ -43,18 +43,38 @@ export const CartProvider = ({ children }) => {
   }, [user]);
 
   const addItem = async (productId, quantity = 1) => {
-    await addToCart(productId, quantity);
-    await fetchCart();
+    try {
+      await addToCart(productId, quantity);
+      await fetchCart();
+    } catch (err) {
+      console.error(err)
+    }
   };
 
   const updateItem = async (productId, quantity) => {
-    await updateCartItem(productId, quantity);
-    await fetchCart();
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product._id === productId ? { ...item, quantity } : item,
+      ),
+    );
+
+    try {
+      await updateCartItem(productId, quantity);
+    } catch (err) {
+      console.error(err);
+      await fetchCart();
+    }
   };
 
   const removeItem = async (productId) => {
-    await removeCartItem(productId);
-    await fetchCart();
+    setCart((prev) => prev.filter((item) => item.product._id !== productId));
+
+    try {
+      await removeCartItem(productId);
+    } catch (err) {
+      console.error(err);
+      fetchCart();
+    }
   };
 
   const emptyCart = async () => {
