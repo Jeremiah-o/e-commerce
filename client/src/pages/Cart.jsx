@@ -143,7 +143,7 @@ const Cart = () => {
                 <h2 className="text-primary text-2xl font-bold mb-4">{formatPrice(totalPrice)}</h2>
               </div>
               <Link
-                to={"/"}
+                to={"/checkout"}
                 className="bg-primary rounded  py-2 text-background flex justify-center gap-2"
               >
                 {" "}
