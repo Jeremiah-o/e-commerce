@@ -171,7 +171,7 @@ const Profile = () => {
             <p className="mt-2 text-sm text-[#7b5a34]">Items currently in cart</p></Link>
           </div>
 
-          <div className="rounded-[22px] border border-[#eadcc5] bg-white p-5 shadow-[0_10px_28px_rgba(91,58,26,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(91,58,26,0.12)]">
+          <Link to="/orders" className="rounded-[22px] border border-[#eadcc5] bg-white p-5 shadow-[0_10px_28px_rgba(91,58,26,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(91,58,26,0.12)]">
             <div className="mb-4 flex items-center justify-between">
               <div className="rounded-full bg-[#f5ead9] p-2 text-[#7a4b20]">
                 <Package size={18} />
@@ -180,9 +180,9 @@ const Profile = () => {
                 Orders
               </span>
             </div>
-            <p className="text-lg font-bold text-[#4c2f14]">Coming Soon</p>
-            <p className="mt-2 text-sm text-[#7b5a34]">Total orders</p>
-          </div>
+            <p className="text-lg font-bold text-[#4c2f14]">Track Orders</p>
+            <p className="mt-2 text-sm text-[#7b5a34]">View every purchase</p>
+          </Link>
 
           <div className="rounded-[22px] border border-[#eadcc5] bg-white p-5 shadow-[0_10px_28px_rgba(91,58,26,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(91,58,26,0.12)] sm:col-span-2 xl:col-span-1">
             <div className="mb-4 flex items-center justify-between">

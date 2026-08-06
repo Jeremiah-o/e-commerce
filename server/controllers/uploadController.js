@@ -1,35 +1,44 @@
 import streamifier from "streamifier";
 import cloudinary from "../config/cloudinary.js";
 
-export const uploadImage = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        message: "No image uploaded",
-      });
-    }
-
+const uploadSingleImage = (file) =>
+  new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: "ecommerce-products",
       },
       (error, result) => {
         if (error) {
-          return res.status(500).json({
-            message: error.message,
-          });
+          reject(error);
+          return;
         }
 
-        res.status(200).json({
-          imageUrl: result.secure_url,
-        });
-      }
+        resolve(result.secure_url);
+      },
     );
 
-    streamifier.createReadStream(req.file.buffer).pipe(stream);
+    streamifier.createReadStream(file.buffer).pipe(stream);
+  });
 
+export const uploadImages = async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        message: "No image uploaded",
+      });
+    }
+
+    const uploadedImages = await Promise.all(
+      req.files.map((file) => uploadSingleImage(file)),
+    );
+
+    res.status(200).json({
+      success: true,
+      images: uploadedImages,
+    });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }

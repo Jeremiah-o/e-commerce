@@ -128,7 +128,8 @@ const { addItem } = useCart();
           <div className="space-y-4">
             <div className="rounded-[26px] border border-[#ece4d7] bg-white p-5 shadow-sm">
               <img
-                src={mainImage}
+                src={mainImage || "https://placehold.co/120x120?text=Product"}
+                // src={item?.image || }
                 alt={product.name}
                 className="h-[430px] w-full rounded-[20px] object-cover"
               />

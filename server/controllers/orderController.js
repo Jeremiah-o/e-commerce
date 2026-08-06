@@ -43,8 +43,8 @@ export const createOrder = async (req, res) => {
       0,
     );
 
-    const shippingPrice = itemsPrice > 5000 ? 0 : 300;
-    const taxPrice = Number((itemsPrice * 0.16).toFixed(2));
+    const shippingPrice = itemsPrice > 5000 ? 0 : (itemsPrice*0.1).toFixed(2) ;
+    const taxPrice = Number((itemsPrice * 0.1).toFixed(2));
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
     const order = await Order.create({
@@ -132,6 +132,7 @@ export const markOrderAsPaid = async (req, res) => {
 
     order.isPaid = true;
     order.paidAt = new Date();
+    order.status = "Processing";
 
     order.paymentResult = {
       id: req.body.id,
@@ -145,6 +146,55 @@ export const markOrderAsPaid = async (req, res) => {
     res.json(updatedOrder);
   } catch (error) {
     res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order status.",
+      });
+    }
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found.",
+      });
+    }
+
+    order.status = status;
+
+    if (status === "Delivered") {
+      order.isDelivered = true;
+      order.deliveredAt = new Date();
+    }
+
+    if (status === "Cancelled") {
+      order.isDelivered = false;
+    }
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order status updated successfully.",
+      order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
@@ -166,6 +216,7 @@ export const markOrderAsDelivered = async (req, res) => {
 
     order.isDelivered = true;
     order.deliveredAt = new Date();
+    order.status = "Delivered";
 
     const updatedOrder = await order.save();
 

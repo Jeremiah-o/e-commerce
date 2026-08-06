@@ -14,8 +14,8 @@ const orderItemSchema = new mongoose.Schema(
     },
 
     image: {
-      type: String
-    //   required: true,
+      type: String,
+      //   required: true,
     },
 
     price: {
@@ -31,11 +31,19 @@ const orderItemSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const shippingAddressSchema = new mongoose.Schema(
   {
+    fullName: {
+      type: String,
+      required: true,
+    },
+    telNo: {
+      type: Number,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
@@ -55,12 +63,25 @@ const shippingAddressSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    county: {
+      type: String,
+      required: true,
+    },
+
+    apartment: {
+      type: String,
+      required: true,
+    },
+    
+    notes:{
+      type:String
+    }
   },
   {
     _id: false,
-  }
+  },
 );
-
 
 const orderSchema = new mongoose.Schema(
   {
@@ -70,9 +91,10 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    orderItems:{type:[orderItemSchema],
-        required:true,
-        validate: {
+    orderItems: {
+      type: [orderItemSchema],
+      required: true,
+      validate: {
         validator: (items) => items.length > 0,
         message: "Order must contain at least one item.",
       },
@@ -86,6 +108,12 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
+    },
+
+    status: {
+      type: String,
+      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
+      default: "Pending",
     },
 
     paymentResult: {
@@ -135,7 +163,7 @@ const orderSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Order = mongoose.model("Order", orderSchema);
