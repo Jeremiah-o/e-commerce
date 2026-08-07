@@ -9,6 +9,7 @@ import {
   LineElement,
   PointElement,
   Tooltip,
+  Filler,
 } from "chart.js";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import {
@@ -24,7 +25,17 @@ import { getAllOrders } from "../services/orderService";
 import { getProducts } from "../services/productService";
 import { getAllUsers } from "../services/userService";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Filler
+);
 
 const statCards = [
   {

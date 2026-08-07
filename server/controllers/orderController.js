@@ -25,7 +25,7 @@ export const createOrder = async (req, res) => {
       if (product.stock < item.quantity) {
         res.status(400);
         throw new Error(
-          `${product.name} only has ${product.countInStock} item(s) left in stock`,
+          `${product.name} only has ${product.stock} item(s) left in stock`,
         );
       }
     }
@@ -43,7 +43,7 @@ export const createOrder = async (req, res) => {
       0,
     );
 
-    const shippingPrice = itemsPrice > 5000 ? 0 : (itemsPrice*0.1).toFixed(2) ;
+    const shippingPrice = itemsPrice > 5000 ? 0 : Number((itemsPrice*0.1).toFixed(2)) ;
     const taxPrice = Number((itemsPrice * 0.1).toFixed(2));
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
@@ -68,7 +68,7 @@ export const createOrder = async (req, res) => {
 
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({
+    res.status(res.statusCode).json({
       message: error.message,
     });
   }
@@ -82,7 +82,7 @@ export const getMyOrders = async (req, res) => {
 
     res.json(orders);
   } catch (error) {
-    res.status(500).json({
+    res.status(res.statusCode).json({
       message: error.message,
     });
   }
@@ -95,6 +95,11 @@ export const getOrderById = async (req, res) => {
       "name email",
     );
 
+    if (!order) {
+      res.status(404);
+      throw new Error("Order not found");
+    }
+
     if (
       order.user._id.toString() !== req.user._id.toString() &&
       !req.user.isAdmin
@@ -103,14 +108,11 @@ export const getOrderById = async (req, res) => {
       throw new Error("Not authorized to view this order");
     }
 
-    if (!order) {
-      res.status(404);
-      throw new Error("Order not found");
-    }
+    
 
     res.json(order);
   } catch (error) {
-    res.status(500).json({
+    res.status(res.statusCode).json({
       message: error.message,
     });
   }
@@ -145,7 +147,7 @@ export const markOrderAsPaid = async (req, res) => {
 
     res.json(updatedOrder);
   } catch (error) {
-    res.status(500).json({
+    res.status(res.statusCode).json({
       message: error.message,
     });
   }
@@ -193,36 +195,8 @@ export const updateOrderStatus = async (req, res) => {
       order,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(res.statusCode).json({
       success: false,
-      message: error.message,
-    });
-  }
-};
-
-export const markOrderAsDelivered = async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
-
-    if (!order) {
-      res.status(404);
-      throw new Error("Order not found");
-    }
-
-    if (order.isDelivered) {
-      res.status(400);
-      throw new Error("Order has already been delivered");
-    }
-
-    order.isDelivered = true;
-    order.deliveredAt = new Date();
-    order.status = "Delivered";
-
-    const updatedOrder = await order.save();
-
-    res.json(updatedOrder);
-  } catch (error) {
-    res.status(500).json({
       message: error.message,
     });
   }
@@ -231,12 +205,12 @@ export const markOrderAsDelivered = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
-      .populate("user", "name email")
+      .populate("orderItems.product", "name image")
       .sort({ createdAt: -1 });
 
     res.json(orders);
   } catch (error) {
-    res.status(500).json({
+    res.status(res.statusCode).json({
       message: error.message,
     });
   }
