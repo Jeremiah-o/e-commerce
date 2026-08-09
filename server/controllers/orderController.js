@@ -43,7 +43,8 @@ export const createOrder = async (req, res) => {
       0,
     );
 
-    const shippingPrice = itemsPrice > 5000 ? 0 : Number((itemsPrice*0.1).toFixed(2)) ;
+    const shippingPrice =
+      itemsPrice > 5000 ? 0 : Number((itemsPrice * 0.1).toFixed(2));
     const taxPrice = Number((itemsPrice * 0.1).toFixed(2));
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
@@ -102,13 +103,11 @@ export const getOrderById = async (req, res) => {
 
     if (
       order.user._id.toString() !== req.user._id.toString() &&
-      !req.user.isAdmin
+      req.user.role !== "admin"
     ) {
       res.status(403);
       throw new Error("Not authorized to view this order");
     }
-
-    
 
     res.json(order);
   } catch (error) {
@@ -158,7 +157,13 @@ export const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const allowedStatuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+    const allowedStatuses = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ];
 
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({
@@ -205,6 +210,7 @@ export const updateOrderStatus = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
+      .populate("user","name email")
       .populate("orderItems.product", "name image")
       .sort({ createdAt: -1 });
 

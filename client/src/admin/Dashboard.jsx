@@ -13,7 +13,6 @@ import {
 } from "chart.js";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import {
-  ArrowUpRight,
   Box,
   PackageSearch,
   ShoppingCart,
@@ -34,14 +33,14 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
-  Filler
+  Filler,
 );
 
 const statCards = [
   {
     key: "revenue",
     label: "Revenue",
-    icon: ArrowUpRight,
+    icon: TrendingUp,
   },
   {
     key: "orders",
@@ -71,14 +70,15 @@ const Dashboard = () => {
       try {
         setLoading(true);
 
-        const [productResponse, orderResponse, userResponse] = await Promise.all([
-          getProducts(),
-          getAllOrders(),
-          getAllUsers(),
-        ]);
+        const [productResponse, orderResponse, userResponse] =
+          await Promise.all([getProducts(), getAllOrders(), getAllUsers()]);
 
         setProducts(productResponse.products || []);
-        setOrders(Array.isArray(orderResponse) ? orderResponse : orderResponse.orders || []);
+        setOrders(
+          Array.isArray(orderResponse)
+            ? orderResponse
+            : orderResponse.orders || [],
+        );
         setUsers(userResponse.users || []);
       } catch (error) {
         console.error(error);
@@ -91,16 +91,27 @@ const Dashboard = () => {
   }, []);
 
   const analytics = useMemo(() => {
-    const totalRevenue = orders.reduce((sum, order) => sum + Number(order.totalPrice || 0), 0);
-    const lowStockProducts = products.filter((product) => Number(product.stock) <= 5).slice(0, 5);
+    const totalRevenue = orders.reduce(
+      (sum, order) => sum + Number(order.totalPrice || 0),
+      0,
+    );
+    const lowStockProducts = products
+      .filter((product) => Number(product.stock) <= 5)
+      .slice(0, 5);
 
-    const productMap = new Map(products.map((product) => [String(product._id), product]));
+    const productMap = new Map(
+      products.map((product) => [String(product._id), product]),
+    );
     const topProductMap = new Map();
     const salesByCategory = new Map();
 
     orders.forEach((order) => {
       order.orderItems?.forEach((item) => {
-        const itemProduct = productMap.get(String(item.product));
+        const productId =
+          typeof item.product === "object" ? item.product?._id : item.product;
+
+        const itemProduct = productMap.get(String(productId));
+
         const category = itemProduct?.category || "Uncategorized";
         const quantity = Number(item.quantity || 0);
         const revenue = Number(item.price || 0) * quantity;
@@ -123,9 +134,15 @@ const Dashboard = () => {
       .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 5);
 
-    const categoryTotals = [...salesByCategory.values()].sort((a, b) => b.revenue - a.revenue);
-    const latestOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
-    const latestCustomers = [...users].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+    const categoryTotals = [...salesByCategory.values()].sort(
+      (a, b) => b.revenue - a.revenue,
+    );
+    const latestOrders = [...orders]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5);
+    const latestCustomers = [...users]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5);
 
     const monthlyRevenue = Array.from({ length: 6 }, (_, index) => {
       const date = new Date();
@@ -201,7 +218,14 @@ const Dashboard = () => {
       {
         label: "Orders",
         data: analytics.monthlyOrders.map((entry) => entry.count),
-        backgroundColor: ["#7b4f25", "#caa46d", "#b87f42", "#8a5b2f", "#dbb067", "#734516"],
+        backgroundColor: [
+          "#7b4f25",
+          "#caa46d",
+          "#b87f42",
+          "#8a5b2f",
+          "#dbb067",
+          "#734516",
+        ],
         borderRadius: 10,
       },
     ],
@@ -213,7 +237,14 @@ const Dashboard = () => {
       {
         label: "Sales by category",
         data: analytics.categoryTotals.map((entry) => entry.revenue),
-        backgroundColor: ["#7b4f25", "#3d7a2a", "#cf9b4e", "#c35d3d", "#8b5cf6", "#1d4ed8"],
+        backgroundColor: [
+          "#7b4f25",
+          "#3d7a2a",
+          "#cf9b4e",
+          "#c35d3d",
+          "#8b5cf6",
+          "#1d4ed8",
+        ],
         borderWidth: 0,
       },
     ],
@@ -244,10 +275,31 @@ const Dashboard = () => {
     },
   };
 
+  const ordersChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => value.toLocaleString(),
+        },
+      },
+    },
+  };
+
   const renderLoadingCards = () => (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="animate-pulse rounded-[22px] border border-border bg-white p-5 shadow-sm">
+        <div
+          key={index}
+          className="animate-pulse rounded-[22px] border border-border bg-white p-5 shadow-sm"
+        >
           <div className="mb-4 h-10 w-10 rounded-2xl bg-[#efe4d6]" />
           <div className="h-4 w-24 rounded bg-[#efe4d6]" />
           <div className="mt-3 h-7 w-28 rounded bg-[#efe4d6]" />
@@ -259,9 +311,16 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <section className="rounded-[28px] border border-border bg-white p-6 shadow-[0_12px_35px_rgba(91,58,26,0.08)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Admin analytics</p>
-        <h1 className="mt-2 text-3xl font-black tracking-tight text-text md:text-4xl">Welcome back, Admin</h1>
-        <p className="mt-2 text-sm text-text/70">Track revenue, order momentum, customer growth, and top-performing categories at a glance.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">
+          Admin analytics
+        </p>
+        <h1 className="mt-2 text-3xl font-black tracking-tight text-text md:text-4xl">
+          Welcome back, Admin
+        </h1>
+        <p className="mt-2 text-sm text-text/70">
+          Track revenue, order momentum, customer growth, and top-performing
+          categories at a glance.
+        </p>
       </section>
 
       {loading ? (
@@ -269,12 +328,14 @@ const Dashboard = () => {
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {statCards.map(({ key, label, icon: Icon }) => (
-            <article key={key} className="rounded-[22px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
+            <article
+              key={key}
+              className="rounded-[22px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]"
+            >
               <div className="mb-4 flex items-center justify-between">
                 <div className="rounded-2xl bg-[#f7efe4] p-3 text-primary">
                   <Icon size={18} />
                 </div>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text/55">Live</span>
               </div>
               <p className="text-sm text-text/70">{label}</p>
               <p className="mt-3 text-2xl font-black text-text">
@@ -292,12 +353,8 @@ const Dashboard = () => {
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-text">Revenue Overview</h2>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#f7efe4] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-              <TrendingUp size={12} />
-              6 months
-            </span>
           </div>
-          <div className="h-[320px]">
+          <div className="h-80">
             <Line data={revenueChartData} options={chartOptions} />
           </div>
         </article>
@@ -305,13 +362,9 @@ const Dashboard = () => {
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-text">Orders per Month</h2>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#f7efe4] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-              <CalendarRange size={12} />
-              Monthly
-            </span>
           </div>
-          <div className="h-[320px]">
-            <Bar data={ordersChartData} options={chartOptions} />
+          <div className="h-80">
+            <Bar data={ordersChartData} options={ordersChartOptions} />
           </div>
         </article>
       </section>
@@ -319,8 +372,12 @@ const Dashboard = () => {
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-text">Top Selling Products</h2>
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Performance</span>
+            <h2 className="text-lg font-bold text-text">
+              Top Selling Products
+            </h2>
+            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+              Performance
+            </span>
           </div>
 
           <div className="space-y-4">
@@ -328,13 +385,11 @@ const Dashboard = () => {
               <div key={product.name} className="rounded-2xl bg-[#faf6ef] p-4">
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <div>
-                    <span className="font-bold text-text">#{index + 1} {product.name}</span>
-                    <div className="mt-1 text-text/65">{product.quantity} units sold</div>
+                    <span className="font-bold text-text"> {product.name}</span>
                   </div>
-                  <span className="font-black text-primary">{formatCurrency(product.revenue)}</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-primary to-[#c08a46]" style={{ width: `${Math.min(100, (product.quantity / Math.max(...analytics.topProducts.map((entry) => entry.quantity), 1)) * 100)}%` }} />
+                  <span className="font-black text-primary">
+                    {product.quantity} sold
+                  </span>
                 </div>
               </div>
             ))}
@@ -344,10 +399,16 @@ const Dashboard = () => {
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-text">Sales by Category</h2>
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Mix</span>
           </div>
-          <div className="h-[320px]">
-            <Doughnut data={categoryChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }} />
+          <div className="h-80">
+            <Doughnut
+              data={categoryChartData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: "bottom" } },
+              }}
+            />
           </div>
         </article>
       </section>
@@ -356,7 +417,7 @@ const Dashboard = () => {
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-text">Latest Orders</h2>
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Recent</span>
+            
           </div>
 
           <div className="overflow-x-auto">
@@ -370,10 +431,19 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 {analytics.latestOrders.map((order) => (
-                  <tr key={order._id} className="border-b border-border/60 last:border-b-0">
-                    <td className="py-3 pr-4 font-semibold text-text">{order.shippingAddress?.fullName || "Guest"}</td>
-                    <td className="py-3 pr-4 text-text/75">{formatCurrency(order.totalPrice || 0)}</td>
-                    <td className="py-3 text-text/75">{new Date(order.createdAt).toLocaleDateString("en-KE")}</td>
+                  <tr
+                    key={order._id}
+                    className="border-b border-border/60 last:border-b-0"
+                  >
+                    <td className="py-3 pr-4 font-semibold text-text">
+                      {order.shippingAddress?.fullName || "Guest"}
+                    </td>
+                    <td className="py-3 pr-4 text-text/75">
+                      {formatCurrency(order.totalPrice || 0)}
+                    </td>
+                    <td className="py-3 text-text/75">
+                      {new Date(order.createdAt).toLocaleDateString("en-KE")}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -384,14 +454,19 @@ const Dashboard = () => {
         <article className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-text">Latest Customers</h2>
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">New</span>
+            
           </div>
 
           <div className="space-y-3">
             {analytics.latestCustomers.map((customer) => (
-              <div key={customer._id} className="flex items-center gap-3 rounded-2xl bg-[#faf6ef] p-3">
+              <div
+                key={customer._id}
+                className="flex items-center gap-3 rounded-2xl bg-[#faf6ef] p-3"
+              >
                 <img
-                  src={customer.avatar || "https://placehold.co/120x120?text=User"}
+                  src={
+                    customer.avatar || "https://placehold.co/120x120?text=User"
+                  }
                   alt={customer.name}
                   className="h-11 w-11 rounded-full object-cover"
                 />
@@ -408,7 +483,6 @@ const Dashboard = () => {
       <section className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_30px_rgba(91,58,26,0.07)]">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text">Low Stock Watchlist</h2>
-          <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Inventory</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -423,9 +497,16 @@ const Dashboard = () => {
             <tbody>
               {analytics.lowStockProducts.length > 0 ? (
                 analytics.lowStockProducts.map((product) => (
-                  <tr key={product._id} className="border-b border-border/60 last:border-b-0">
-                    <td className="py-3 pr-4 font-semibold text-text">{product.name}</td>
-                    <td className="py-3 pr-4 text-text/70">{product.category}</td>
+                  <tr
+                    key={product._id}
+                    className="border-b border-border/60 last:border-b-0"
+                  >
+                    <td className="py-3 pr-4 font-semibold text-text">
+                      {product.name}
+                    </td>
+                    <td className="py-3 pr-4 text-text/70">
+                      {product.category}
+                    </td>
                     <td className="py-3">
                       <span className="rounded-full bg-[#fbe4e4] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-red-600">
                         {product.stock}

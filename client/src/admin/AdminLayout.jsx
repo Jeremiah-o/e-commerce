@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet,Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard,
   Package,
   ShoppingCart,
+  CircleUserRound,
+  LogOut,
   Users,
   Store,
   Menu,
@@ -22,18 +25,21 @@ const navItems = [
 
 const AdminLayout = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-[#f8f4ee] text-text">
-      <div className="flex min-h-screen">
-        <aside className="hidden w-72 flex-col border-r border-border bg-white shadow-[0_10px_35px_rgba(91,58,26,0.06)] lg:flex">
-          <div className="border-b border-border px-6 py-5">
+      <div className="flex h-screen overflow-hidden bg-background">
+        <aside className="hidden h-screen w-64 shrink-0 overflow-y-auto border-r border-border bg-white lg:block">
+          <div className="border-b border-border px-6 py-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
                 <Store size={18} />
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">ShopSmart</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+                  ShopSmart
+                </p>
                 <h1 className="text-lg font-bold text-text">Admin</h1>
               </div>
             </div>
@@ -49,7 +55,7 @@ const AdminLayout = () => {
                   `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                     isActive
                       ? "bg-primary text-white shadow-[0_10px_24px_rgba(155,115,80,0.28)]"
-                      : "text-text hover:bg-[#f8f2ea] hover:text-primary"
+                      : "text-text hover:bg-background hover:text-primary"
                   }`
                 }
               >
@@ -73,19 +79,28 @@ const AdminLayout = () => {
                 </button>
 
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Operations</p>
-                  <h2 className="text-lg font-bold text-text">Control Center</h2>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                    Operations
+                  </p>
+                  <h2 className="text-lg font-bold text-text">
+                    Control Center
+                  </h2>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-2 rounded-xl border border-border bg-[#fbf7f1] px-3 py-2 text-sm text-text/70 md:flex">
-                  <Search size={15} className="text-primary" />
-                  Search analytics
-                </div>
-                <div className="rounded-xl border border-border bg-[#fbf7f1] p-2 text-primary">
-                  <Bell size={18} />
-                </div>
+                <Link
+                to="/profile"
+                className="relative flex items-center justify-center transition hover:bg-[#efe2d0] rounded-xl border border-border bg-[#fbf7f1] p-2 text-primary"
+              >
+                <CircleUserRound className="text-primary-dark" size={20} />
+              </Link>
+              <button
+                onClick={logout}
+                className="hover:cursor-pointer relative flex items-center justify-center transition hover:bg-[#efe2d0] rounded-xl border border-border bg-[#fbf7f1] p-2 text-primary"
+              >
+                <LogOut className="text-primary-dark" size={20} />
+              </button>
               </div>
             </div>
           </header>
@@ -103,7 +118,7 @@ const AdminLayout = () => {
                       `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
                         isActive
                           ? "bg-primary text-white"
-                          : "text-text hover:bg-[#f8f2ea] hover:text-primary"
+                          : "text-text hover:bg-background hover:text-primary"
                       }`
                     }
                   >
@@ -115,7 +130,7 @@ const AdminLayout = () => {
             </div>
           )}
 
-          <main className="flex-1 p-4 md:p-6">
+          <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-6">
             <Outlet />
           </main>
         </div>
