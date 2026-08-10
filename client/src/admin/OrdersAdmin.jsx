@@ -167,7 +167,7 @@ const OrdersAdmin = () => {
                           </td>
                           <td className="px-4 py-4">
                             <Link
-                              to={`/orders/${order._id}`}
+                              to={`/admin/orders/${order._id}`}
                               className="inline-flex items-center rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark"
                             >
                               View Details

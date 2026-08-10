@@ -107,6 +107,7 @@ const AdminOrderDetails = () => {
           <Link
             to="/admin/orders"
              onClick={() => console.log("Going to admin orders")}
+             
             className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-[#fbf7f1] px-4 py-2 text-sm font-semibold text-text transition hover:text-primary"
           >
             <ArrowLeft size={16} />
