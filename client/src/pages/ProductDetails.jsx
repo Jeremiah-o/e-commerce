@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import {
   ChevronRight,
   Heart,
@@ -35,8 +36,8 @@ const { addItem } = useCart();
     try {
       setAdding(true);
       await addItem(product._id, quantity);
-
-      alert("Product added to cart!");
+      toast.success("Product added to cart!");
+      navigate("/products")
     } catch (err) {
       if (err.response?.status === 401) {
         navigate("/login");
@@ -52,6 +53,7 @@ const { addItem } = useCart();
   const handleBuyNow = async () => {
     try {
       await addItem(product._id, quantity);
+      toast.success("Product added to cart!");
 
       navigate("/checkout");
     } catch (err) {

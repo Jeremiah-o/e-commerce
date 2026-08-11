@@ -33,7 +33,11 @@ function Login() {
 
       login(data.user, data.token);
 
-      navigate("/");
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -43,14 +47,11 @@ function Login() {
 
   return (
     <div className="max-w-md mx-auto mt-16">
-      <h1 className="text-3xl font-bold mb-6">Login</h1>
+      <h1 className="text-3xl text-accent font-bold mb-6">Login</h1>
 
-      {error && (
-        <p className="text-red-500 mb-4">{error}</p>
-      )}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         <input
           type="email"
           name="email"
@@ -74,11 +75,10 @@ function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white w-full p-3 rounded"
+          className="bg-primary hover:bg-primary-dark text-white w-full p-3 rounded"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-
       </form>
     </div>
   );

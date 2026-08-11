@@ -26,7 +26,7 @@ export const Checkout = () => {
     notes: "",
   });
 
-  const {cart}=useCart()
+  const {cart,emptyCart}=useCart()
 
   const handleChange = (e) => {
     setShippingAddress({
@@ -63,10 +63,12 @@ export const Checkout = () => {
         paymentMethod: "Mpesa",
       });
       toast.success("Order placed successfully!");
-      console.log(result);
+      // console.log(result);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
+      
+      await emptyCart()
       setLoading(false);
     }
   };

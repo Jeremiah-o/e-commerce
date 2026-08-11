@@ -117,7 +117,7 @@ const AdminOrderDetails = () => {
 
         <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <section className="space-y-6">
-            <div className="rounded-[24px] border border-border bg-[#fbf7f1] p-5">
+            <div className="rounded-3xl border border-border bg-[#fbf7f1] p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text/55">Customer information</p>
@@ -137,7 +137,7 @@ const AdminOrderDetails = () => {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
+            <div className="rounded-3xl border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-[#f5ead9] p-2 text-primary">
                   <MapPin size={18} />
@@ -176,7 +176,7 @@ const AdminOrderDetails = () => {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
+            <div className="rounded-3xl border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-[#f5ead9] p-2 text-primary">
                   <PackageCheck size={18} />
@@ -207,7 +207,7 @@ const AdminOrderDetails = () => {
           </section>
 
           <aside className="space-y-6">
-            <div className="rounded-[24px] border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
+            <div className="rounded-3xl border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-[#f5ead9] p-2 text-primary">
                   <CreditCard size={18} />
@@ -239,7 +239,7 @@ const AdminOrderDetails = () => {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
+            <div className="rounded-3xl border border-border bg-white p-5 shadow-[0_14px_40px_rgba(91,58,26,0.08)]">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-[#f5ead9] p-2 text-primary">
                   <CalendarDays size={18} />
