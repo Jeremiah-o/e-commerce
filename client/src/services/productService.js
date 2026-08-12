@@ -51,3 +51,16 @@ export const uploadProductImages = async (files, onUploadProgress) => {
 
   return data;
 };
+
+export const getProductReviews = async (productId) => {
+  const response = await api.get(`/products/${productId}/reviews`);
+  return response.data;
+};
+
+export const createProductReview = async (productId, reviewData) => {
+  const response = await api.post(
+    `/products/${productId}/reviews`,
+    reviewData
+  );
+  return response.data;
+};

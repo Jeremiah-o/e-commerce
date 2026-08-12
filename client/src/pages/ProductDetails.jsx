@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { getProductById, getProducts } from "../services/productService";
+import { getProductById, getProducts, getProductReviews, createProductReview } from "../services/productService";
 import { useCart } from "../context/CartContext";
 
 const tabs = ["Description", "Specifications", "Reviews"];
@@ -271,10 +271,10 @@ const { addItem } = useCart();
                   Category: {product.category || "General"}
                 </li>
                 <li className="rounded-md bg-[#f8f4ee] px-3 py-2">
-                  Brand: ShopSmart
+                  Brand: {product.brand}
                 </li>
                 <li className="rounded-md bg-[#f8f4ee] px-3 py-2">
-                  Availability: In stock
+                  Availability: {product.stock>0 ?"In stock" : "Out of stock" }
                 </li>
                 <li className="rounded-md bg-[#f8f4ee] px-3 py-2">
                   Shipping: 2-4 days
