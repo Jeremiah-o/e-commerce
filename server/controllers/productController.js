@@ -278,7 +278,6 @@ export const createProductReview = async (req, res) => {
       });
     }
 
-    // Check if user already reviewed
     const alreadyReviewed = product.reviews.find(
       (review) => review.user.toString() === req.user._id.toString(),
     );
@@ -308,6 +307,9 @@ export const createProductReview = async (req, res) => {
 
     res.status(201).json({
       message: "Review added successfully",
+      rating: product.rating,
+      numReviews: product.numReviews,
+      reviews: product.reviews,
     });
   } catch (error) {
     res.status(500).json({
