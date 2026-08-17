@@ -21,10 +21,31 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (!token || !storedUser) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp < currentTime) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setUser(null);
+      } else {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      setUser(null);
     }
 
     setLoading(false);
