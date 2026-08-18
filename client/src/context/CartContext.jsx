@@ -28,7 +28,6 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
 
       const data = await getCart();
-      // console.log(data)
 
       setCart(data.cart?.items || []);
     } catch (err) {
